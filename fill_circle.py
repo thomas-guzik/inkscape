@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-# Programme permettant l'ajout de petits points gris dans des rectangles créés à l'aide d'Inkscape.
+# Program allowing the addition of small grey dots in rectangles created using Inkscape.
 
 # Thomas Guzik, thomas.guzik@laposte.net
 # Leo 130 contact@avilab.fr
@@ -15,69 +14,69 @@ import inkex
 from lxml import etree
 
 def recup(selection,attrib):
-	l = []
-	for i in xrange(len(selection)):
-		selec = selection[i]
-		valr = selec.get(attrib)
-		l.append(valr)
-	return l
+    l = []
+    for i in selection:
+        selec = i
+        valr = selec.get(attrib)
+        l.append(valr)
+    return l
 
 def generCircle(y,x,r):
-	circle = etree.Element('{http://www.w3.org/2000/svg}circle')
-	circle.set('cy',str(y))
-	circle.set('cx',str(x))
-	circle.set('r',str(r))
-	circle.set('fill','#000000')
-	circle.set('stroke','#000000')
-	circle.set('stroke-width','0')
-	return circle
-
-#def onlyRect(selection): A coder !
+    circle = etree.Element('{http://www.w3.org/2000/svg}circle')
+    circle.set('cy',str(y))
+    circle.set('cx',str(x))
+    circle.set('r',str(r))
+    circle.set('fill','#000000')
+    circle.set('stroke','#000000')
+    circle.set('stroke-width','0')
+    return circle
 
 def toFloat(l):
-	for i in xrange(len(l)):
-		l[i] = float(l[i])
-	return l
+    for i in range(len(l)):
+        l[i] = float(l[i])
+    return l
 
 class Circle(inkex.Effect):
-	def __init__(self):
-		inkex.Effect.__init__(self)
-		self.OptionParser.add_option('--rayon', action = 'store', type = 'float', dest = 'rayon', default = 3.0, help = 'Rayon a entrer')
-		self.OptionParser.add_option('--marg', action = 'store', type = 'float', dest = 'marg', default = 10.0, help = 'Marge a entrer')
-		self.OptionParser.add_option('--space', action = 'store', type = 'float', dest = 'space', default = 30.0, help = 'Espace a rentrer')
+    def __init__(self):
+        inkex.Effect.__init__(self)
+        self.arg_parser.add_argument('--radius', type = float, default = 3.0, help = 'Radius to enter')
+        self.arg_parser.add_argument('--margin', type = float, default = 10.0, help = 'Margin between the edge of the rectangles and the circles')
+        self.arg_parser.add_argument('--space', type = float, default = 30.0, help = 'Spacing between circles')
 
-	def effect(self):
-		# svg = self.document.getroot()
-		# layer = etree.SubElement(svg, 'g')
-		# layer.set(inkex.addNS('label', 'inkscape'), 'Layer')
-		# layer.set(inkex.addNS('groupmode', 'inkscape'), 'layer')
-		# Faut il ajouter les cercles sur une feuille de calque différente ?
+    def effect(self):
+        # svg = self.svg.document.getroot()
+        # layer = etree.SubElement(svg, 'g')
+        # layer.set(inkex.addNS('label', 'inkscape'), 'Layer')
+        # layer.set(inkex.addNS('groupmode', 'inkscape'), 'layer')
+        # Should we add the circles on a different layer sheet?
 
-		rayon = self.options.rayon
-		marg = self.options.marg
-		space =  self.options.space
+        radius = self.options.radius
+        margin = self.options.margin
+        space =  self.options.space
 
-		selection = (self.selected).values()
+        if str(list(self.svg.selected.values())[0]) == 'rect':
+            selection = (self.svg.selected).values()
+            
+            y,x,height,width = [], [], [], []
+            
+            if (len(selection))>0:
+                y = toFloat(recup(selection,'y'))
+                x = toFloat(recup(selection,'x'))
+                height = toFloat(recup(selection,'height'))
+                width = toFloat(recup(selection,'width'))
+            
+                for i in range(len(selection)):
+                    xC = x[i] + margin
+                    yC = y[i] + margin
+            
+                    while xC < (x[i] + width[i] - margin):
+                        while yC < (y[i] + height[i] - margin):
+                            self.svg.get_current_layer().append(generCircle(yC,xC,radius))
+                            yC += (space + radius)
+            
+                        xC += space + radius
+                        yC = y[i] + margin
+        else:
+            inkex.utils.debug("No rectangle(s) have been selected.")
 
-		y,x,height,width = [], [], [], []
-
-		if (len(selection))>0:
-			y = toFloat(recup(selection,'y'))
-			x = toFloat(recup(selection,'x'))
-			height = toFloat(recup(selection,'height'))
-			width = toFloat(recup(selection,'width'))
-
-			for i in xrange(len(selection)):
-				xC = x[i] + marg
-				yC = y[i] + marg
-
-				while xC < (x[i] + width[i] - marg):
-					while yC < (y[i] + height[i] - marg):
-						self.current_layer.append(generCircle(yC,xC,rayon))
-						yC += (space + rayon)
-
-					xC += space + rayon
-					yC = y[i] + marg
-
-c = Circle()
-c.affect()
+Circle().run()

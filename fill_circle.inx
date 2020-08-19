@@ -1,26 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-
-	<_name>Remplir de cercles</_name>
-	<id>org.ekips.filter.fill_circle</id>
-
-	<dependency type="executable" location="extensions">fill_circle.py</dependency>
-	<dependency type="executable" location="extensions">inkex.py</dependency>
-
-	<param name="rayon" type="float" min="0.01" max="10000" _gui-text="Rayon des cercles : ">3.0</param>
-	
-	<param name="marg" type="float" min="0.01" max="10000" _gui-text="Marge entre le bord des rectangles et les cercles : ">10.0</param>
-
-	<param name="space" type="float" min="0.01" max="10000" _gui-text="Espacement entre les cercles : ">30.0</param>
-
-	<effect>
-		<object-type>all</object-type>
-		<effects-menu>
-			<submenu _name="Création Avilab"/>
-		</effects-menu>
-	</effect>
-
-	<script>
-		<command reldir="extensions" interpreter="python">fill_circle.py</command>
-	</script>
+    <name>Remplir de cercles</name>
+    <id>org.ekips.filter.fill_circle</id>
+    <param name="radius" type="float" min="0.01" max="10000" gui-text="Radius to enter">3.0</param>
+    <param name="margin" type="float" min="0.01" max="10000" gui-text="Margin between the edge of the rectangles and the circles">10.0</param>
+    <param name="space" type="float" min="0.01" max="10000" gui-text="Spacing between circles">30.0</param>
+    <effect>
+        <object-type>all</object-type>
+            <effects-menu>
+                <submenu _name="Création Avilab"/>
+            </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">fill_circle.py</command>
+    </script>
 </inkscape-extension>
